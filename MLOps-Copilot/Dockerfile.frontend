@@ -1,0 +1,18 @@
+# Base image - Python 3.10 ka chota version
+FROM python:3.10-slim
+
+# Container ke andar kaam karne ki jagah set karo
+WORKDIR /app
+
+# Requirements file copy karo aur libraries install karo
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Hamara frontend code copy karo
+COPY frontend.py .
+
+# Streamlit UI port 8501 par chalta hai
+EXPOSE 8501
+
+# Container start hote hi frontend UI chalao
+CMD ["streamlit", "run", "frontend.py", "--server.port=8501", "--server.address=0.0.0.0"]

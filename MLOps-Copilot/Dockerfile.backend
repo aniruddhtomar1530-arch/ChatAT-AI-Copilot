@@ -1,0 +1,16 @@
+# Base image - Python 3.10 ka chota version
+FROM python:3.10-slim
+
+# Container ke andar kaam karne ki jagah set karo
+WORKDIR /app
+
+# Requirements file copy karo aur libraries install karo
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Hamara backend code aur .env file copy karo
+COPY backend.py .
+COPY .env .
+
+# Container start hote hi backend server chalao
+CMD ["uvicorn", "backend:app", "--host", "0.0.0.0", "--port", "8000"]
