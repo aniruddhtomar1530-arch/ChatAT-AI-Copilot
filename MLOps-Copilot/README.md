@@ -1,5 +1,10 @@
 # 🤖 ChatAT: MLOps & Hyper-Tuning Copilot
 
+> 🔴 **Live Demo is LIVE:** [Click here to try ChatAT](https://chatat-frontend.onrender.com)
+
+An enterprise-grade, microservices-based AI Copilot designed to assist Data Scientists...
+# 🤖 ChatAT: MLOps & Hyper-Tuning Copilot
+
 An enterprise-grade, microservices-based AI Copilot designed to assist Data Scientists and Machine Learning Engineers. It provides expert guidance on Hyperparameter Tuning (using frameworks like Optuna), MLOps best practices, and Docker containerization.
 
 ## 🌟 Key Features
