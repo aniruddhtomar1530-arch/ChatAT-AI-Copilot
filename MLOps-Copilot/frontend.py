@@ -30,7 +30,7 @@ if prompt:
     # Backend API ko call lagao
     try:
         # FastAPI server ko request bhej rahe hain
-        response = requests.post("http://backend:8000/chat", json={"prompt": prompt})
+        response = requests.post("https://chatat-ai-copilot.onrender.com/chat", json={"prompt": prompt})
         response_data = response.json()
         
         if "response" in response_data:
