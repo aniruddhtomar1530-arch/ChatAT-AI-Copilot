@@ -10,7 +10,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Hamara backend code aur .env file copy karo
 COPY backend.py .
-COPY .env .
 
 # Container start hote hi backend server chalao
 CMD ["uvicorn", "backend:app", "--host", "0.0.0.0", "--port", "8000"]
