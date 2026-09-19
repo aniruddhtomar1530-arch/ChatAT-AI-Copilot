@@ -4,6 +4,7 @@ from google import genai
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+import certifi
 
 # .env file se API key aur DB URL load karo
 load_dotenv()
@@ -12,7 +13,7 @@ mongo_uri = os.getenv("MONGO_URI")
 
 # MongoDB Connection Setup
 try:
-    mongo_client = MongoClient(mongo_uri)
+    mongo_client = MongoClient(mongo_uri,tlsCAFile=certifi.where())
     db = mongo_client["chatat_database"]      # Database ka naam
     chat_collection = db["chat_history"]      # Table (Collection) ka naam
     print("✅ MongoDB connected successfully!")
