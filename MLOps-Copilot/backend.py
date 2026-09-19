@@ -45,5 +45,11 @@ def chat_with_bot(request: ChatRequest):
             config={"system_instruction": system_prompt}
         )
         return {"response": response.text}
+        
     except Exception as e:
-        return {"error": str(e)}
+        error_msg = str(e)
+        # Google ke traffic jam ko pyar se handle karna
+        if "503" in error_msg or "UNAVAILABLE" in error_msg:
+            return {"response": "⏳ AI Engine par abhi bahut traffic hai. Kripya 10-15 seconds baad dobara try karein!"}
+        else:
+            return {"response": f"🚨 Ek technical issue aa gaya: {error_msg}"}
