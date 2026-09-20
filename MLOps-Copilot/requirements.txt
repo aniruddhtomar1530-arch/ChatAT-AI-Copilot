@@ -5,5 +5,5 @@ google-genai
 pydantic
 python-dotenv
 requests
-pymongo
+pymongo[srv]
 certifi
