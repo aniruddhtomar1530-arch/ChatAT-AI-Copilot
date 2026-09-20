@@ -41,7 +41,7 @@ st.markdown("🎤 **Bol kar sawaal poochne ke liye Mic dabayein:**")
 spoken_text = speech_to_text(language='en', use_container_width=True, just_once=True, key='STT')
 
 # Naya message type karne ka box
-typed_text = st.chat_input("Apna ML ya deployment question yahan type karo...")
+typed_text = st.chat_input("Ask ChatAT...")
 
 # Dono mein se jo bhi input aaye (type kiya hua ya bola hua), usko prompt maan lo
 prompt = typed_text or spoken_text
