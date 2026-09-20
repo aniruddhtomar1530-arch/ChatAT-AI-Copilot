@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from gtts import gTTS
 import os
+from streamlit_mic_recorder import speech_to_text
 
 # Backend URL ko ek variable mein rakh lete hain taaki baar-baar na likhna pade
 BACKEND_URL = "https://chatat-ai-copilot.onrender.com"
@@ -16,13 +17,11 @@ st.markdown("Welcome! Main tumhara AI Assistant hoon. Mujhse ML models tune karn
 if "messages" not in st.session_state:
     st.session_state.messages = []
     
-    # 🟢 NAYA KAAM: Backend se purani history mangwana
     try:
         history_response = requests.get(f"{BACKEND_URL}/history")
         if history_response.status_code == 200:
             history_data = history_response.json().get("history", [])
             
-            # Database ke messages ko Streamlit format mein set karna
             for chat in history_data:
                 st.session_state.messages.append({"role": "user", "content": chat["user_message"]})
                 st.session_state.messages.append({"role": "assistant", "content": chat["bot_response"]})
@@ -34,8 +33,18 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# ---------------------------------------------------------
+# 🟢 NAYA KAAM: Mic aur Type karne dono ka option add kiya
+# ---------------------------------------------------------
+st.markdown("🎤 **Bol kar sawaal poochne ke liye Mic dabayein:**")
+# Mic button jisse user bol sake
+spoken_text = speech_to_text(language='en', use_container_width=True, just_once=True, key='STT')
+
 # Naya message type karne ka box
-prompt = st.chat_input("Apna ML ya deployment question yahan type karo...")
+typed_text = st.chat_input("Apna ML ya deployment question yahan type karo...")
+
+# Dono mein se jo bhi input aaye (type kiya hua ya bola hua), usko prompt maan lo
+prompt = typed_text or spoken_text
 
 if prompt:
     # User ka message screen par dikhao
@@ -47,7 +56,6 @@ if prompt:
 
     # Backend API ko call lagao
     try:
-        # Naye BACKEND_URL variable ka use kar rahe hain
         response = requests.post(f"{BACKEND_URL}/chat", json={"prompt": prompt})
         response_data = response.json()
         
@@ -63,7 +71,7 @@ if prompt:
     with st.chat_message("assistant"):
         st.markdown(bot_reply)
         try:
-            # lang='hi' ka matlab Hindi/Hinglish accent, 'en' for pure English
+            # lang='hi' ka matlab Hindi/Hinglish accent
             tts = gTTS(text=bot_reply, lang='hi') 
             tts.save("bot_voice.mp3")
             

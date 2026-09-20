@@ -8,3 +8,4 @@ requests
 pymongo[srv]
 certifi
 gtts
+streamlit-mic-recorder
