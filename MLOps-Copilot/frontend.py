@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+from gtts import gTTS
+import os
 
 # Backend URL ko ek variable mein rakh lete hain taaki baar-baar na likhna pade
 BACKEND_URL = "https://chatat-ai-copilot.onrender.com"
@@ -60,6 +62,17 @@ if prompt:
     # Bot ka reply screen par dikhao
     with st.chat_message("assistant"):
         st.markdown(bot_reply)
+        try:
+            # lang='hi' ka matlab Hindi/Hinglish accent, 'en' for pure English
+            tts = gTTS(text=bot_reply, lang='hi') 
+            tts.save("bot_voice.mp3")
+            
+            # Streamlit mein audio play karne ka widget
+            audio_file = open("bot_voice.mp3", "rb")
+            audio_bytes = audio_file.read()
+            st.audio(audio_bytes, format="audio/mp3", autoplay=True)
+        except Exception as e:
+            pass # Agar audio mein koi dikkat aaye toh chat break na ho
         
     # Reply ko memory mein save karo
     st.session_state.messages.append({"role": "assistant", "content": bot_reply})
