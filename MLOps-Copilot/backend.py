@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import certifi
+from fastapi.middleware.cors import CORSMiddleware 
 
 # .env file se API key aur DB URL load karo
 load_dotenv()
