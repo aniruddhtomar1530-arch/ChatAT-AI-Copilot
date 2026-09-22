@@ -23,6 +23,25 @@ except Exception as e:
 client = genai.Client(api_key=api_key)
 app = FastAPI(title="MLOps Copilot API")
 
+# ==========================================
+# 🛡️ SECURITY SHIELD 2: CORS PROTECTION
+# ==========================================
+
+# Yahan apne Streamlit frontend ka exact URL daalo (bina aakhri slash '/' ke)
+# Example: "https://chatat-frontend.streamlit.app"
+STREAMLIT_URL = "https://chatat-frontend.onrender.com"
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[STREAMLIT_URL], # 🟢 Sirf is URL ko allow karega
+    allow_credentials=True,
+    allow_methods=["GET", "POST"], # Sirf GET aur POST allow karega
+    allow_headers=["*"],
+)
+# ==========================================
+
+# (Tumhara baaki ka database aur /chat wala code iske niche rahega...)
+
 class ChatRequest(BaseModel):
     prompt: str
 
@@ -38,19 +57,33 @@ def get_history():
     for chat in chat_collection.find({}, {"_id": 0}):
         chats.append(chat)
     return {"history": chats}
-
 @app.post("/chat")
-def chat_with_bot(request: ChatRequest):
+async def chat_endpoint(request: dict): # Tumhara jo bhi request format tha, us hisaab se adjust kar lena
+    user_prompt = request.get("prompt", "").strip()
+
+    # ==========================================
+    # 🛡️ SECURITY SHIELD 3: PROMPT INJECTION DEFENSE
+    # ==========================================
+    
+    # Level 1: Block Dangerous Keywords (Basic Filter)
+    dangerous_words = ["ignore previous", "ignore all", "system prompt", "act as", "forget everything", "bypass"]
+    if any(word in user_prompt.lower() for word in dangerous_words):
+        return {"response": "🚨 Security Alert: Main sirf MLOps aur Hyper-tuning ka assistant hoon. Main is tarah ke commands follow nahi kar sakta."}
+
+    # Level 2: Strict Context Wrapper (AI ko uski aukaat yaad dilana)
+    safe_prompt = f"""
+    Tumhara naam ChatAT hai. Tum ek highly professional MLOps aur Hyperparameter Tuning Assistant ho.
+    Tumhara kaam sirf Machine Learning, Data Science, Deployment (Docker, FastAPI, Render), aur Python coding se related sawalon ka jawab dena hai.
+    Agar user koi aisi baat kare jo in topics se bahar ho (jaise politics, gaane, jokes, ya tumhe kuch aur banne ko kahe), toh use politely mana kar do aur kaho ki tum sirf ML Assistant ho.
+
+    User ka original sawal: "{user_prompt}"
+    """
+    # ==========================================
+
     try:
-        system_prompt = """You are an expert MLOps and Hyperparameter Tuning Copilot. 
-        Your job is to help users optimize Machine Learning models, write tuning code, and guide them on Docker and FastAPI deployments. 
-        Always give professional, highly accurate, and industry-standard advice."""
-        
-        response = client.models.generate_content(
-            model='gemini-3.6-flash',
-            contents=request.prompt,
-            config={"system_instruction": system_prompt}
-        )
+        # Ab hum directly user ka prompt nahi, balki apna 'safe_prompt' Gemini ko bhejenge
+        model = genai.GenerativeModel('gemini-pro') # Ya jo bhi model tum use kar rahe ho
+        response = model.generate_content(safe_prompt)
         
         bot_reply = response.text
         

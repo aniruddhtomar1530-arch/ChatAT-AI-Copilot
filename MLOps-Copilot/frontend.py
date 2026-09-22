@@ -10,6 +10,30 @@ BACKEND_URL = "https://chatat-ai-copilot.onrender.com"
 # Page ka title aur icon set karna
 st.set_page_config(page_title="ChatAT", page_icon="🤖")
 
+# ==========================================
+# 🛡️ SECURITY SHIELD 1: APP PASSWORD
+# ==========================================
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.markdown("<h2 style='text-align: center;'>🔒 Security Gateway</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>ChatAT access karne ke liye Secret Code dalein</p>", unsafe_allow_html=True)
+    
+    pwd = st.text_input("Enter Secret Code:", type="password")
+    
+    if st.button("Unlock 🔓"):
+        if pwd == "Admin@2026":  # Yahan apna koi bhi secret password set kar lo
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("❌ Galat Code! Access Denied.")
+            
+    st.stop() # Jab tak code sahi nahi hoga, iske niche ka koi code nahi chalega!
+# ==========================================
+
+# (Tumhara baaki ka saara normal ChatAT code iske niche rahega...)
+
 st.title("🤖 ChatAT: MLOps & Hyper-Tuning Copilot")
 st.markdown("Welcome! Main tumhara AI Assistant hoon. Mujhse ML models tune karne ya Docker se related kuch bhi pucho.")
 
