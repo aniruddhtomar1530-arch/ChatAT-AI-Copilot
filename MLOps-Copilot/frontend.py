@@ -6,6 +6,7 @@ from streamlit_mic_recorder import speech_to_text
 
 # Backend URL ko ek variable mein rakh lete hain taaki baar-baar na likhna pade
 BACKEND_URL = "https://chatat-ai-copilot.onrender.com"
+API_SECRET_KEY = os.getenv("API_SECRET_KEY", "CHATAT_BACKEND@2026") # 🟢 YEH LINE ADD KARO
 
 # Page ka title aur icon set karna
 st.set_page_config(page_title="ChatAT", page_icon="🤖")
@@ -78,16 +79,28 @@ if prompt:
     # Message ko memory mein save karo
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # Backend API ko call lagao
+   # Backend API ko call lagao
     try:
-        response = requests.post(f"{BACKEND_URL}/chat", json={"prompt": prompt})
-        response_data = response.json()
+        # 🟢 NAYA KAAM: Header mein API Key bhejna aur 60s timeout lagana
+        response = requests.post(
+            f"{BACKEND_URL}/chat", 
+            json={"prompt": prompt},
+            headers={"x-api-key": API_SECRET_KEY},
+            timeout=60 # Render ke cold start ke liye wait karega
+        )
         
-        if "response" in response_data:
-            bot_reply = response_data["response"]
+        # Check karo agar auth fail hua ho
+        if response.status_code == 401:
+             bot_reply = "❌ Error: Backend authentication fail ho gaya. API Key check karo!"
         else:
-            bot_reply = f"❌ Error: {response_data.get('error', 'Kuch galat ho gaya.')}"
+            response_data = response.json()
+            if "response" in response_data:
+                bot_reply = response_data["response"]
+            else:
+                bot_reply = f"❌ Asli Error: {response_data}"
             
+    except requests.exceptions.Timeout:
+        bot_reply = "⏳ Server abhi 'Wake Up' ho raha hai (Render Cold Start). Kripya 10 second baad dobara try karein!"
     except requests.exceptions.ConnectionError:
         bot_reply = "❌ Backend se connect nahi ho pa raha hai. Kya FastAPI server chal raha hai?"
 
