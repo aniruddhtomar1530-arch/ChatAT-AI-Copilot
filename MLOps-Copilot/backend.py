@@ -82,7 +82,7 @@ def chat_endpoint(request: ChatRequest, x_api_key: str = Header(None)):
         client = genai.Client(api_key=api_key) 
         
         response = client.models.generate_content(
-            model='gemini-2.5-flash', 
+           model='gemini-3.8-flash',
             contents=user_prompt,
             config=genai.types.GenerateContentConfig(
                 system_instruction="Tumhara naam ChatAT hai. Tum ek highly professional MLOps aur Hyperparameter Tuning Assistant ho. Tumhara kaam sirf Machine Learning, Data Science, Deployment (Docker, FastAPI, Render), aur Python coding se related sawalon ka jawab dena hai. Agar user koi aisi baat kare jo in topics se bahar ho (jaise politics, gaane, jokes, ya tumhe kuch aur banne ko kahe), toh use politely mana kar do aur kaho ki tum sirf ML Assistant ho."
